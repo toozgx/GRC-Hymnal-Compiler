@@ -34,7 +34,7 @@ def _pt(value):
 def run_query(main_typ_path, selector):
     result = subprocess.run(
         ["typst", "query", str(main_typ_path), selector, "--pretty"],
-        capture_output=True, text=True,
+        capture_output=True, text=True, encoding="utf-8",
     )
     if result.returncode != 0:
         raise RuntimeError(f"typst query failed for {selector}:\n{result.stderr}")
