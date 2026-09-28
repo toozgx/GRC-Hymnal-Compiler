@@ -43,6 +43,10 @@ def main():
 
     workbook_path = sys.argv[1]
     here = Path(__file__).resolve().parent
+    check = subprocess.run([sys.executable, str(here / "validate_workbook.py"), workbook_path])
+    if check.returncode != 0:
+        print("Workbook validation found ERRORS - build stopped. Fix them and run again.")
+        sys.exit(1)
     data_path = here / "hymnal_data.json"
     main_typ = here / "main.typ"
     output_pdf = here / "hymnal.pdf"
