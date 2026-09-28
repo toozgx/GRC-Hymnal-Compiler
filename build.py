@@ -30,7 +30,7 @@ def main():
     here = Path(__file__).resolve().parent
     data_path = here / "hymnal_data.json"
     main_typ = here / "main.typ"
-    output_pdf = here / "hymnal_pilot.pdf"
+    output_pdf = here / "hymnal.pdf"
 
     hymns, sections, contributors, categories = load_workbook(workbook_path)
     title_page = load_title_page(workbook_path)
@@ -59,20 +59,19 @@ def main():
         print(result.stderr or result.stdout)
         sys.exit(1)
 
-    print("[3/*] Resolving forced column breaks (iterative) ...")
+    print("[3/*] Resolving forced column breaks (one at a time, top to bottom) ...")
     flagged = set()
-    MAX_ITERATIONS = 10
+    MAX_ITERATIONS = 100
     for iteration in range(1, MAX_ITERATIONS + 1):
-        new_flagged = set(compute_force_breaks(main_typ))
-        added = new_flagged - flagged
-        flagged |= new_flagged
-
-        print(f"       iteration {iteration}: total flagged = {sorted(flagged)}"
-              + (f"  (new: {sorted(added)})" if added else "  (no change)"))
-
-        if not added:
-            print(f"       Converged after {iteration} iteration(s).")
+        violations = sorted(set(compute_force_breaks(main_typ)) - flagged)
+        if not violations:
+            print(f"       Converged after {iteration} iteration(s). Flagged: {sorted(flagged)}")
             break
+
+        first = violations[0]
+        flagged.add(first)
+        print(f"       iteration {iteration}: adding break before hymn {first}"
+              f"  (total flagged = {sorted(flagged)})")
 
         for hymn in hymn_data:
             hymn["force_break_before"] = hymn["printed_no"] in flagged
