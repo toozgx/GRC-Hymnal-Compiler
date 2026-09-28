@@ -50,11 +50,6 @@ def main():
     hymns, sections, contributors, categories = load_workbook(workbook_path)
     title_page = load_title_page(workbook_path)
     hymn_data = build_hymn_data(hymns, sections, contributors)
-    for hymn in hymn_data:
-        if hymn["id"] == "MOSWAN":
-            for section in hymn["sections"]:
-                print("SECTION:", section["type"])
-                print(repr(section["text"]))
     indexes, index_warnings = build_indexes(hymns, hymn_data, contributors, categories)
 
     for warning in index_warnings:
