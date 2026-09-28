@@ -29,6 +29,7 @@ HYMNS_SHEET = "Hymns Metadata"
 SECTIONS_SHEET = "Lyrics Section"
 CONTRIBUTORS_SHEET = "Contributors"
 CATEGORIES_SHEET = "Categories"
+TITLE_PAGE_SHEET = "Title Page"
  
 HYMNS_COLUMNS = [
     "ID", "Title", "Category", "Tune 1", "Tune 2", "Tune 3", "Main Tune", "Status",
@@ -405,7 +406,7 @@ def main():
     report = Report()
     wb = openpyxl.load_workbook(path, data_only=True)
  
-    for sheet in (HYMNS_SHEET, SECTIONS_SHEET, CONTRIBUTORS_SHEET, CATEGORIES_SHEET):
+    for sheet in (HYMNS_SHEET, SECTIONS_SHEET, CONTRIBUTORS_SHEET, CATEGORIES_SHEET, TITLE_PAGE_SHEET):
         if sheet not in wb.sheetnames:
             report.error(f"Workbook is missing sheet '{sheet}'. Found: {wb.sheetnames}")
     if report.errors:
@@ -419,6 +420,13 @@ def main():
         f"Loaded {len(hymns)} hymn row(s), {len(sections)} section row(s), "
         f"{len(contributors)} contributor row(s)"
     )
+
+    title_keys = {str(k).strip().lower()
+        for k, v in wb[TITLE_PAGE_SHEET].iter_rows(min_row=2, max_col=2, values_only=True)
+        if k and v}
+    for needed in ("title", "subtitle"):
+        if needed not in title_keys:
+            report.error(f"Title Page: missing or empty value for key '{needed}'")
  
     valid_ids = validate_hymns(hymns, report)
     hymns_by_id = {h["ID"]: h for h in hymns if h["ID"]}
