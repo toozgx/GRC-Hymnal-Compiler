@@ -14,7 +14,7 @@ per credited person/source per hymn). Hymns Metadata gained a "Main Tune"
 column (blank = Tune 1 is primary, or 1/2/3 to say otherwise).
  
 Usage:
-    python3 validate_workbook.py Hymns We Sing 2nd Edition Master - Pilot.xlsx
+    python3 validate_workbook.py "Hymns We Sing 2nd Edition Master - Pilot.xlsx"
 """
  
 import sys
@@ -47,6 +47,7 @@ ROLE_GROUP = {
     "author": "words", "word source": "words",
     "translator": "translation", "translation source": "translation",
     "composer": "tune", "tune source": "tune",
+# For the tune group, Sequence uniqueness is also checked per Tune Slot.
 }
 TUNE_SLOT_ROLES = {"composer", "tune source"}
 VALID_TUNE_SLOTS = (1, 2, 3, "1", "2", "3")
