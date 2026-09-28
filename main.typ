@@ -22,7 +22,7 @@
 // ============================================================
 
 #setup-index-page[
-  #category-index(data.indexes.category)
+  #category-index(data.indexes.category, breaks: data.at("category_breaks", default: ()))
 ]
 
 // ============================================================
