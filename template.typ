@@ -6,13 +6,22 @@
 //
 // SCHEMA CONTRACT with transform.py's JSON — if you rename a field in
 // transform.py's build_hymn_data(), it must change here too:
-//   words_line (string | none), tune_lines (array of string),
-//   alt_tunes_line (string | none), tunes (array of {slot,name,composer}),
-//   sections (array of {type,label,text,stanza_no?})
+//   printed_no, id, title, category, flags (unused here),
+//   words_line (string | none), translator_line (string | none),
+//   tune_lines (array of string), alt_tunes_line (string | none),
+//   sections (array of {type,label,text,stanza_no?}),
+//   force_break_before (bool, optional, added by build.py)
+// Top-level keys: hymns, indexes, title_page, category_breaks.
+// indexes: category (dict), title (array), person_source (dict),
+//   tune (array of {name, composer, hymn_nos}).
+//
+// LOAD-BEARING TAGS: <hymn-debug>, <hymn-measured> and <category-debug> are
+// read by pagination.py. Do not remove or rename them without updating it.
+// <section-debug> is diagnostic only.
  
 // ============================================================
 // TUNABLE VALUES — all working, none final. Change values here;
-// nothing below this block should need editing to retune spacing.
+// exceptions: hymn-gap is currently unused, and hymn-block hard-codes the A5 height (595.28pt).
 // ============================================================
  
 #let page-margin-top-bottom = 0.5cm
@@ -25,23 +34,17 @@
 #let attribution-size = 6pt
  
 #let body-leading = 0.5em
-// Gap between authored lines within one stanza/section. Your last
-// confirmed-working baseline used 0pt (tight). A pasted-in later version
-// used 0.6em (looser) — kept here as 0pt since that's what was actually
-// confirmed; change to 0.6em if the looser spacing was a deliberate,
-// tested choice rather than a leftover experiment.
+// Gap between authored lines within one stanza/section. Current working value.
 #let authored-line-spacing = 5pt
  
 #let stanza-number-col = 12pt
 #let stanza-wrap-indent = 8pt   // wrap-indent used inside stanzas
-#let label-wrap-indent = 10pt  // wrap-indent used inside Chorus/Bridge/etc.
-                                // (kept distinct per your latest file —
-                                // tell me if these should actually match)
+#let label-wrap-indent = 10pt  // wrap-indent inside Chorus/Bridge/etc. (differs from stanza-wrap-indent; undecided whether they should match)
  
 #let section-gap = 12pt      // between stanzas / chorus / bridge / etc.
 #let attribution-gap = 18pt  // before attribution — MUST stay larger than
                               // section-gap per the typography spec
-#let hymn-gap = 12pt         // between one hymn and the next
+#let hymn-gap = 12pt         // NOT USED at present; spacing between hymns comes from other block spacing
 
 #let title-gap = 10pt   // gap between title and subtitle
  
@@ -117,11 +120,6 @@
 // each authored line already starts its own paragraph via parbreak().
 // justify is off: short, deliberately-broken lyric lines look wrong
 // stretched to fill the column width.
-//
-// NOTE: only ONE line-rendering function now. A second, unused
-// `render-lines()` existed alongside `render-stanza-lines()` in a
-// pasted draft — dead code, removed to avoid editing the wrong one
-// later.
 // ============================================================
  
 #let render-lines(txt, wrap-indent: stanza-wrap-indent) = {
@@ -224,8 +222,7 @@
 // ATTRIBUTION (after lyrics, small italic)
 // Uses ONLY the fields transform.py actually emits. words_line already
 // encodes the "Words and Tune by X" consolidation when author and
-// composer match — do not re-derive that check here from fields that
-// don't exist; that's how the duplicate-tune-line bug happened.
+// composer match — do not re-derive that check here.
 // ============================================================
  
 #let attribution-block(hymn) = {
