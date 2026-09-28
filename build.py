@@ -85,7 +85,12 @@ def main():
 
     print("[3] Resolving category-index page breaks (one at a time, top to bottom) ...")
     for iteration in range(1, 101):
-        violation = first_category_break_violation(main_typ, category_breaks)
+        try:
+            violation = first_category_break_violation(main_typ, category_breaks)
+        except RuntimeError as err:
+            print(f"Typst query FAILED (category breaks, iteration {iteration}):")
+            print(err)
+            sys.exit(1)
         if violation is None:
             print(f"       Converged after {iteration} iteration(s). Breaks before: {category_breaks}")
             break
@@ -95,14 +100,6 @@ def main():
 
         write_data(data_path, hymn_data, indexes, title_page, category_breaks)
 
-        result = subprocess.run(
-            ["typst", "compile", str(main_typ), str(output_pdf)],
-            capture_output=True, text=True, encoding="utf-8",
-        )
-        if result.returncode != 0:
-            print(f"Typst compilation FAILED (category breaks, iteration {iteration}):")
-            print(result.stderr or result.stdout)
-            sys.exit(1)
     else:
         print("WARNING: category breaks did not converge within 100 iterations.")
         print(f"         Final list: {category_breaks} — inspect manually before trusting output.")
@@ -111,7 +108,12 @@ def main():
     flagged = set()
     MAX_ITERATIONS = 100
     for iteration in range(1, MAX_ITERATIONS + 1):
-        violations = sorted(set(compute_force_breaks(main_typ)) - flagged)
+        try:
+            violations = sorted(set(compute_force_breaks(main_typ)) - flagged)
+        except RuntimeError as err:
+            print(f"Typst query FAILED (column breaks, iteration {iteration}):")
+            print(err)
+            sys.exit(1)
         if not violations:
             print(f"       Converged after {iteration} iteration(s). Flagged: {sorted(flagged)}")
             break
@@ -126,14 +128,6 @@ def main():
 
         write_data(data_path, hymn_data, indexes, title_page, category_breaks)
 
-        result = subprocess.run(
-            ["typst", "compile", str(main_typ), str(output_pdf)],
-            capture_output=True, text=True, encoding="utf-8",
-        )
-        if result.returncode != 0:
-            print(f"Typst compilation FAILED (iteration {iteration}):")
-            print(result.stderr or result.stdout)
-            sys.exit(1)
     else:
         print(f"WARNING: did not converge within {MAX_ITERATIONS} iterations.")
         print(f"         Final flag set: {sorted(flagged)} — inspect manually before trusting output.")
