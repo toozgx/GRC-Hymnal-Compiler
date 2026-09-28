@@ -361,7 +361,7 @@
  
   for entry in index {
     let left = emph[#quote(block: false)[#entry.name]] + if entry.composer != "" [
-      #h(0.02em)—#h(0.1em)#entry.composer
+      #h(0.1em)#sym.hyph#h(0.2em)#entry.composer
     ] else []
     index-row(left, entry.hymn_nos.map(str).join(", "))
   }
