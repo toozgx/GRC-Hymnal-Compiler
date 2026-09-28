@@ -119,10 +119,6 @@ def sort_key(title):
     return t
 
 
-def same_person(a, b):
-    if not a or not b:
-        return False
-    return a.strip().lower() == b.strip().lower()
 
 
 def normalize_lyric_text(text):
