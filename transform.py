@@ -464,7 +464,7 @@ def build_indexes(hymns, hymn_data, contributors, categories):
                 base_rows = credit_rows  # no stanza/chorus split on this slot — use the full credit as-is
 
             identity = tuple(sorted((r["Person Name"] or "").strip().casefold() for r in base_rows))
-            credit = join_credits([{**r, "Note": None} for r in base_rows])  # notes dropped in the index
+            credit = join_credits([{**r, "Note": None} for r in base_rows]) or ""  # notes dropped in the index
 
             key = (name_key, identity)
             tune_nos[key].add(h["printed_no"])
