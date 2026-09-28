@@ -230,7 +230,7 @@
     set align(right)
  
     block(
-      width: 65%,
+      width: 90%,
       above: attribution-gap,
       below: 4pt,
       breakable: false,
