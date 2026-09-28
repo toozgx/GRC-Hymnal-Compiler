@@ -15,12 +15,7 @@ flat columns on Hymns Metadata — they're rows in "Contributors" (Hymn ID,
 Sequence, Role, Person Name, Note, Tune Slot). Hymns Metadata gained
 "Main Tune" (blank = Tune 1 is primary, or 1/2/3 to override).
 
-INDEX BUILDING IS CURRENTLY STUBBED. Last-name sorting and the four
-publication indexes are being worked out in a separate pass — this file
-only needs to get the printed attribution line (words_line / translator_line
-/ tune_lines / alt_tunes_line) right for now. build_indexes() below returns
-empty structures so build.py's pipeline keeps running end-to-end; it is not
-yet meant to produce real index content.
+build_indexes() produces the four publication indexes (see its own docstring).
 
 DECIDED for this pilot (confirmed by editor):
 
@@ -40,17 +35,15 @@ DECIDED for this pilot (confirmed by editor):
     Translation, and Tune/Alt. tune (the tune credit is appended straight
     after the quoted tune name, e.g. 'Tune: "NETTLETON" by X & from Y').
 
-  - "Words and Tune by/from X" collapse: only when there is exactly one
-    Author/Word-Source credit and exactly one Composer/Tune-Source credit
-    on the Main Tune, they're the same person, NEITHER carries a Note (a
-    Note signals a distinction — e.g. a stanza-only credit — that collapsing
-    would erase), and both credits are the same kind (both a person role or
-    both a source role, so "by" vs "from" isn't ambiguous for one combined
-    line). The connector then follows that shared kind.
+  - "Words and Tune by/from X" collapse: applies when the Words credits
+    and the Main Tune credits are the same set of names (one or several),
+    all of the same kind (all person roles or all source roles), and none
+    carries a Note. A Note signals a distinction (e.g. a stanza-only
+    credit) that collapsing would erase. The connector ("by" or "from")
+    follows the shared kind.
 
 Usage:
-    python3 transform.py Hymns We Sing 2nd Edition Master - Pilot.xlsx
-"""
+    python transform.py "Hymns We Sing 2nd Edition Master - Pilot.xlsx"
 
 import sys
 from collections import defaultdict
