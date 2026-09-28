@@ -54,6 +54,11 @@ def main():
     hymns, sections, contributors, categories = load_workbook(workbook_path)
     title_page = load_title_page(workbook_path)
     hymn_data = build_hymn_data(hymns, sections, contributors)
+      flag_total = sum(len(h["flags"]) for h in hymn_data)
+      print(f"Attribution flags: {flag_total}")
+      for h in hymn_data:
+          for f in h["flags"]:
+              print(f"  FLAG #{h['printed_no']} {h['title']}: {f}")
     indexes, index_warnings = build_indexes(hymns, hymn_data, contributors, categories)
 
     for warning in index_warnings:
