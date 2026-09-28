@@ -14,6 +14,7 @@ Writes hymnal_data.json and hymnal.pdf into that same folder.
 import sys
 import json
 import subprocess
+import shutil
 from pathlib import Path
 
 from transform import load_workbook, build_hymn_data, build_indexes, load_title_page
@@ -40,6 +41,10 @@ def main():
     if len(sys.argv) != 2:
         print("Usage: python3 build.py <path-to-workbook.xlsx>")
         sys.exit(1)
+        
+    if shutil.which("typst") is None:
+        print("Typst was not found on PATH. Install it or add it to PATH, then run again.")
+        sys.exit(1)
 
     workbook_path = sys.argv[1]
     here = Path(__file__).resolve().parent
@@ -54,11 +59,11 @@ def main():
     hymns, sections, contributors, categories = load_workbook(workbook_path)
     title_page = load_title_page(workbook_path)
     hymn_data = build_hymn_data(hymns, sections, contributors)
-      flag_total = sum(len(h["flags"]) for h in hymn_data)
-      print(f"Attribution flags: {flag_total}")
-      for h in hymn_data:
-          for f in h["flags"]:
-              print(f"  FLAG #{h['printed_no']} {h['title']}: {f}")
+    flag_total = sum(len(h["flags"]) for h in hymn_data)
+    print(f"Attribution flags: {flag_total}")
+    for h in hymn_data:
+        for f in h["flags"]:
+            print(f"  FLAG #{h['printed_no']} {h['title']}: {f}")
     indexes, index_warnings = build_indexes(hymns, hymn_data, contributors, categories)
 
     for warning in index_warnings:
