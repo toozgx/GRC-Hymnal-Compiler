@@ -78,7 +78,7 @@ def main():
             hymn["force_break_before"] = hymn["printed_no"] in flagged
 
         with open(data_path, "w", encoding="utf-8") as f:
-            json.dump({"hymns": hymn_data, "indexes": indexes}, f, ensure_ascii=False, indent=2)
+            json.dump({"hymns": hymn_data, "indexes": indexes, "title_page": title_page}, f, ensure_ascii=False, indent=2)
 
         result = subprocess.run(
             ["typst", "compile", str(main_typ), str(output_pdf)],
