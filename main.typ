@@ -7,6 +7,7 @@
 #import "template.typ": (
   setup-page,
   setup-index-page,
+  title-page,
   hymn-block,
   category-index,
   title-index,
