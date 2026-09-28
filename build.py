@@ -62,7 +62,7 @@ def main():
     print(f"[2] Compiling {main_typ.name} (pass 1, measurement) ...")
     result = subprocess.run(
         ["typst", "compile", str(main_typ), str(output_pdf)],
-        capture_output=True, text=True,
+        capture_output=True, text=True, encoding="utf-8",
     )
     if result.returncode != 0:
         print("Typst compilation FAILED (pass 1):")
@@ -83,7 +83,7 @@ def main():
 
         result = subprocess.run(
             ["typst", "compile", str(main_typ), str(output_pdf)],
-            capture_output=True, text=True,
+            capture_output=True, text=True, encoding="utf-8",
         )
         if result.returncode != 0:
             print(f"Typst compilation FAILED (category breaks, iteration {iteration}):")
@@ -114,7 +114,7 @@ def main():
 
         result = subprocess.run(
             ["typst", "compile", str(main_typ), str(output_pdf)],
-            capture_output=True, text=True,
+            capture_output=True, text=True, encoding="utf-8",
         )
         if result.returncode != 0:
             print(f"Typst compilation FAILED (iteration {iteration}):")
@@ -127,7 +127,7 @@ def main():
     print(f"[5] Compiling {main_typ.name} -> {output_pdf.name} ...")
     result = subprocess.run(
         ["typst", "compile", str(main_typ), str(output_pdf)],
-        capture_output=True, text=True,
+        capture_output=True, text=True, encoding="utf-8",
     )
     if result.returncode != 0:
         print("Typst compilation FAILED (final):")
