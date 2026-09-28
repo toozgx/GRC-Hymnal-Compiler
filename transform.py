@@ -476,7 +476,7 @@ def build_indexes(hymns, hymn_data, contributors, categories):
                     f"Tune name '{name}' maps to more than one composer identity across hymns "
                     f"(now indexed as separate entries) — '{tune_display[key][1]}' vs credit(s) "
                     f"already seen for this name; confirm this is a genuine same-name coincidence, "
-                    f"not a data-entry error (seen again at hymn #{h['printed_no']})"
+                    f"not a data-entry error (first seen with this credit at hymn #{h['printed_no']})"
                 )
             prior_identities.add(identity)
 
