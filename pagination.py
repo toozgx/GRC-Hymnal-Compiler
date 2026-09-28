@@ -12,6 +12,10 @@ no false positives, no misses.
 
 These constants mirror template.typ's page geometry. If page size,
 margins, or columns change in template.typ, update them here too.
+
+Also decides which category-index headings need a forced page break
+(first_category_break_violation). The tags <hymn-debug>, <hymn-measured>
+and <category-debug> are defined in template.typ; do not remove or rename them.
 """
 
 import json
