@@ -345,8 +345,8 @@ def build_hymn_data(hymns, sections, contributors):
     return results
 
 
-INDEX3_ROLES = ("author", "word source", "translator", "translation source")
-INDEX4_ROLES = ("composer", "tune source")
+INDEX3_ROLES = WORDS_ROLES + TRANSLATION_ROLES
+INDEX4_ROLES = TUNE_ROLES
 
 
 def build_indexes(hymns, hymn_data, contributors, categories):
