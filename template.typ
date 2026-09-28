@@ -42,6 +42,8 @@
 #let attribution-gap = 18pt  // before attribution — MUST stay larger than
                               // section-gap per the typography spec
 #let hymn-gap = 12pt         // between one hymn and the next
+
+#let title-gap = 10pt   // gap between title and subtitle
  
 // Pagination: OPEN QUESTION, not decided here. false = natural flow
 // (test this first, per your own brief). true = force each hymn to stay
@@ -98,8 +100,9 @@
 }
 
 #let title-page(info) = setup-title-page[
+  #set par(spacing: 0pt, leading: 0.4em)
   #text(size: 24pt, weight: "bold")[#upper(info.title)]
-  #v(4pt)
+  #v(title-gap)
   #text(size: 14pt, style: "italic")[#info.subtitle]
 ]
  
