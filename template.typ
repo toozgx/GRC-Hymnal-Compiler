@@ -47,13 +47,6 @@
 #let hymn-gap = 12pt         // NOT USED at present; spacing between hymns comes from other block spacing
 
 #let title-gap = 10pt   // gap between title and subtitle
- 
-// Pagination: OPEN QUESTION, not decided here. false = natural flow
-// (test this first, per your own brief). true = force each hymn to stay
-// together (skip to next column/page rather than split). Flip this one
-// value once you've actually compared the two — don't just leave it on
-// true because a draft happened to set it that way.
-#let keep-hymn-together = true
 
 #let index-side-margin = 2.5cm
  
@@ -80,7 +73,7 @@
     paper: "a5",
     margin: (
       top: page-margin-top-bottom, bottom: page-margin-top-bottom,
-      left: 2.5cm, right: 2.5cm,
+      left: index-side-margin, right: index-side-margin,
     ),
     columns: 1,
   )
