@@ -51,6 +51,8 @@
 // value once you've actually compared the two — don't just leave it on
 // true because a draft happened to set it that way.
 #let keep-hymn-together = true
+
+#let index-side-margin = 2.5cm
  
 // ============================================================
 // PAGE SETUP
@@ -296,8 +298,8 @@
   ]
 }
  
-#let category-index(index) = {
-  let usable-height = 595.28pt - 2 * page-margin-top-bottom
+#let category-index(index, breaks: ()) = {
+  let keep = 2   // entries kept with the heading, and minimum carried over
 
   let category-heading(category) = block(
     above: 30pt,
@@ -307,7 +309,7 @@
     #category
   ]
 
-  let category-entry(entry) = block(below: 6pt)[
+  let category-entry(entry) = block(below: 5pt)[
     #set text(size: 10pt)
     #entry.title #box(width: 1fr, repeat[.#h(2pt)]) #entry.no
   ]
@@ -316,30 +318,41 @@
     #index-heading("Category")
 
     #for (category, entries) in index {
-      let full-content = category-heading(category) + entries.map(category-entry).join()
+      if category in breaks {
+        pagebreak(weak: true)
+      }
 
-      layout(size => {
-        let measured = measure(width: size.width, full-content)
-        if measured.height <= usable-height {
-          block(breakable: false)[#full-content]
-        } else if entries.len() > 0 {
-          // Too tall to keep whole — but glue heading to its first
-          // entry so the heading can never be orphaned alone.
-          block(breakable: false)[
-            #category-heading(category)
-            #category-entry(entries.first())
-          ]
-          for entry in entries.slice(1) {
-            category-entry(entry)
-          }
-        } else {
-          category-heading(category)
+      context [
+        #metadata((
+          category: category,
+          page: here().position().page,
+          y: here().position().y,
+        )) <category-debug>
+      ]
+
+      let n = entries.len()
+
+      if n <= 2 * keep {
+        block(breakable: false)[
+          #category-heading(category)
+          #for e in entries [#category-entry(e)]
+        ]
+      } else {
+        block(breakable: false, below: 5pt)[
+          #category-heading(category)
+          #for e in entries.slice(0, keep) [#category-entry(e)]
+        ]
+        for e in entries.slice(keep, n - keep) {
+          category-entry(e)
         }
-      })
+        block(breakable: false)[
+          #for e in entries.slice(n - keep) [#category-entry(e)]
+        ]
+      }
     }
   ]
 }
- 
+
 #let title-index(index) = {
   index-heading("Title Index")
 
