@@ -5,10 +5,10 @@ Full pilot build: workbook -> hymnal_data.json -> PDF, via the local Typst
 compiler (`typst` must be on PATH).
 
 Usage:
-    python3 build.py "path/to/workbook.xlsx"
+    python build.py "path/to/workbook.xlsx"
 
 Expects template.typ and main.typ in the same folder as this script.
-Writes hymnal_data.json and hymnal_pilot.pdf into that same folder.
+Writes hymnal_data.json and hymnal.pdf into that same folder.
 """
 
 import sys
