@@ -324,7 +324,7 @@ def build_hymn_data(hymns, sections, contributors):
         stanza_no = 0
         for s in by_hymn_sections.get(h["ID"], []):
             type_lc = (s["Type"] or "").strip().lower()
-            entry = {"type": type_lc, "label": s["Label"], "text": normalize_lyric_text(s["Text"])}
+            entry = {"type": type_lc, "label": s["Label"] or None, "text": normalize_lyric_text(s["Text"])}
             if type_lc == "stanza":
                 stanza_no += 1
                 entry["stanza_no"] = stanza_no
