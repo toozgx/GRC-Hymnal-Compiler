@@ -43,7 +43,8 @@ DECIDED for this pilot (confirmed by editor):
     follows the shared kind.
 
 Usage:
-    python transform.py "Hymns We Sing 2nd Edition Master - Pilot.xlsx"
+    python transform.py <Hymns We Sing 2nd Edition Master Datasheet (LIVE)>
+    """
 
 import sys
 from collections import defaultdict
