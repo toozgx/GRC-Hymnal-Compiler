@@ -389,7 +389,7 @@
           y: here().position().y,
         )) <section-debug>
       ]
-      if section == hymn.sections.last() {
+      if idx == hymn.sections.len() - 1 {
         block(breakable: false)[
           #section-block(section)
           #attribution-block(hymn)
