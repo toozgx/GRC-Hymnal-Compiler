@@ -351,7 +351,7 @@
   index-heading("Index by Author, Translator, and Source")
  
   for (name, hymn_nos) in index {
-    index-row(name, hymn_nos.map(str).join(", "))
+    index-row(name, hymn_nos.map(str).join(", "), number-col-width: 3.0cm)
   }
 }
  
@@ -362,7 +362,7 @@
     let left = emph[#quote(block: false)[#entry.name]] + if entry.composer != "" [
       #h(0.01em)—#h(0.01em)#entry.composer
     ] else []
-    index-row(left, entry.hymn_nos.map(str).join(", "))
+    index-row(left, entry.hymn_nos.map(str).join(", "), number-col-width: 2.2cm)
   }
 }
  
