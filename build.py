@@ -57,9 +57,9 @@ def main():
 
     category_breaks = []
     write_data(data_path, hymn_data, indexes, title_page, category_breaks)
-    print(f"[1/4] Wrote {len(hymn_data)} active hymn(s) to {data_path.name}")
+    print(f"[1] Wrote {len(hymn_data)} active hymn(s) to {data_path.name}")
 
-    print(f"[2/4] Compiling {main_typ.name} (pass 1, measurement) ...")
+    print(f"[2] Compiling {main_typ.name} (pass 1, measurement) ...")
     result = subprocess.run(
         ["typst", "compile", str(main_typ), str(output_pdf)],
         capture_output=True, text=True,
@@ -69,7 +69,7 @@ def main():
         print(result.stderr or result.stdout)
         sys.exit(1)
 
-    print("[2b] Resolving category-index page breaks (one at a time, top to bottom) ...")
+    print("[3] Resolving category-index page breaks (one at a time, top to bottom) ...")
     for iteration in range(1, 101):
         violation = first_category_break_violation(main_typ, category_breaks)
         if violation is None:
@@ -93,7 +93,7 @@ def main():
         print("WARNING: category breaks did not converge within 100 iterations.")
         print(f"         Final list: {category_breaks} — inspect manually before trusting output.")
 
-    print("[3/*] Resolving forced column breaks (one at a time, top to bottom) ...")
+    print("[4] Resolving forced column breaks (one at a time, top to bottom) ...")
     flagged = set()
     MAX_ITERATIONS = 100
     for iteration in range(1, MAX_ITERATIONS + 1):
@@ -124,7 +124,7 @@ def main():
         print(f"WARNING: did not converge within {MAX_ITERATIONS} iterations.")
         print(f"         Final flag set: {sorted(flagged)} — inspect manually before trusting output.")
 
-    print(f"[final] Compiling {main_typ.name} -> {output_pdf.name} ...")
+    print(f"[5] Compiling {main_typ.name} -> {output_pdf.name} ...")
     result = subprocess.run(
         ["typst", "compile", str(main_typ), str(output_pdf)],
         capture_output=True, text=True,
