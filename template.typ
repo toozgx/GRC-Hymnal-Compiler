@@ -83,7 +83,25 @@
  
 }
  
- 
+#let setup-title-page(body) = {
+  set page(
+    paper: "a5",
+    margin: (
+      top: page-margin-top-bottom, bottom: page-margin-top-bottom,
+      left: page-margin-sides, right: page-margin-sides,
+    ),
+    columns: 1,
+  )
+  set text(font: "PT Sans", hyphenate: false)
+  set align(center + horizon)
+  body
+}
+
+#let title-page(info) = setup-title-page[
+  #text(size: 24pt, weight: "bold")[#upper(info.title)]
+  #v(4pt)
+  #text(size: 14pt, style: "italic")[#info.subtitle]
+]
  
 // ============================================================
 // LINE RENDERING
