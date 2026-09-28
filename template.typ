@@ -283,34 +283,16 @@
   left-content,
   numbers,
   size: 7pt,
-  number-col-width: 2.2cm,
   indent: 8pt,
 ) = {
   block(
     below: 4pt,
     breakable: false,
   )[
-    #grid(
-      columns: (1fr, number-col-width),
-      gutter: 6pt,
-
-      [
-        #set text(size: size)
-        #set par(
-          hanging-indent: indent,
-          justify: false,
-          leading: 0.5em,
-        )
-        #left-content
-        #parbreak()
-      ],
-
-      align(right)[
-        #set text(size: size)
-        #set par(justify: false)
-        #numbers
-      ],
-    )
+    #set text(size: size)
+    #par(hanging-indent: indent, justify: false, leading: 0.5em)[
+      #left-content #box(width: 1fr, repeat[.#h(2pt)]) #numbers
+    ]
   ]
 }
  
@@ -327,9 +309,7 @@
 
   let category-entry(entry) = block(below: 6pt)[
     #set text(size: 10pt)
-    #entry.title
-    #h(1.1fr)
-    #entry.no
+    #entry.title #box(width: 1fr, repeat[.#h(2pt)]) #entry.no
   ]
 
   align(center)[
@@ -364,7 +344,7 @@
   index-heading("Title Index")
 
   for entry in index {
-    index-row(entry.title, str(entry.no), number-col-width: 0.8cm)
+    index-row(entry.title, str(entry.no))
   }
 }
  
@@ -372,7 +352,7 @@
   index-heading("Index by Author, Translator, and Source")
  
   for (name, hymn_nos) in index {
-    index-row(name, hymn_nos.map(str).join(", "), number-col-width: 3.0cm)
+    index-row(name, hymn_nos.map(str).join(", "))
   }
 }
  
@@ -381,9 +361,9 @@
  
   for entry in index {
     let left = emph[#quote(block: false)[#entry.name]] + if entry.composer != "" [
-      #h(0.01em)—#h(0.01em)#entry.composer
+      #h(0.02em)—#h(0.1em)#entry.composer
     ] else []
-    index-row(left, entry.hymn_nos.map(str).join(", "), number-col-width: 2.2cm)
+    index-row(left, entry.hymn_nos.map(str).join(", "))
   }
 }
  
