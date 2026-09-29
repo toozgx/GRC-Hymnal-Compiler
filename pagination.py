@@ -33,11 +33,11 @@ def _pt(value):
 
 def run_query(main_typ_path, selector):
     result = subprocess.run(
-        ["typst", "query", str(main_typ_path), selector, "--pretty"],
+        ["typst", "eval", f"query({selector})", "--in", str(main_typ_path), "--pretty"],
         capture_output=True, text=True, encoding="utf-8",
     )
     if result.returncode != 0:
-        raise RuntimeError(f"typst query failed for {selector}:\n{result.stderr}")
+        raise RuntimeError(f"typst eval query failed for {selector}:\n{result.stderr}")
     return json.loads(result.stdout)
 
 
