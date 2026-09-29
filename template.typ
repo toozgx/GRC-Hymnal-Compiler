@@ -48,7 +48,8 @@
 
 #let title-gap = 10pt   // gap between title and subtitle
 
-#let index-side-margin = 2.5cm
+#let index-category-side-margin = 2.5cm
+#let index-category-title-gap = 24pt
  
 // ============================================================
 // PAGE SETUP
@@ -73,7 +74,7 @@
     paper: "a5",
     margin: (
       top: page-margin-top-bottom, bottom: page-margin-top-bottom,
-      left: index-side-margin, right: index-side-margin,
+      left: index-category-side-margin, right: index-category-side-margin,
     ),
     columns: 1,
   )
@@ -290,9 +291,9 @@
  
 #let category-index(index, breaks: ()) = {
   let keep = 2   // entries kept with the heading, and minimum carried over
+  let category-gap = index-category-title-gap   // space between end of one category and the next heading
 
   let category-heading(category) = block(
-    above: 30pt,
     below: 18pt,
   )[
     #set text(weight: "bold", size: 14pt)
@@ -304,6 +305,16 @@
     #entry.title #box(width: 1fr, repeat[.#h(2pt)]) #entry.no
   ]
 
+  // Position marker read by pagination.py. Placed inside the first block
+  // of each category so it reports the heading's real position, after the gap.
+  let category-marker(category) = context [
+    #metadata((
+      category: category,
+      page: here().position().page,
+      y: here().position().y,
+    )) <category-debug>
+  ]
+
   align(center)[
     #index-heading("Category")
 
@@ -312,23 +323,17 @@
         pagebreak(weak: true)
       }
 
-      context [
-        #metadata((
-          category: category,
-          page: here().position().page,
-          y: here().position().y,
-        )) <category-debug>
-      ]
-
       let n = entries.len()
 
       if n <= 2 * keep {
-        block(breakable: false)[
+        block(breakable: false, above: index-category-title-gap)[
+          #category-marker(category)
           #category-heading(category)
           #for e in entries [#category-entry(e)]
         ]
       } else {
-        block(breakable: false, below: 5pt)[
+        block(breakable: false, above: index-category-title-gap, below: 5pt)[
+          #category-marker(category)
           #category-heading(category)
           #for e in entries.slice(0, keep) [#category-entry(e)]
         ]
