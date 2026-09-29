@@ -33,8 +33,7 @@
 #let body-size = 9pt
 #let attribution-size = 6pt
  
-#let body-leading = 0.5em
-// Gap between authored lines within one stanza/section. Current working value.
+#let body-leading = 0.5em  // Gap between authored lines within one stanza/section. Current working value.
 #let authored-line-spacing = 5pt
  
 #let stanza-number-col = 12pt
@@ -42,7 +41,7 @@
 #let label-wrap-indent = 10pt  // wrap-indent inside Chorus/Bridge/etc. (differs from stanza-wrap-indent; undecided whether they should match)
  
 #let section-gap = 12pt      // between stanzas / chorus / bridge / etc.
-#let attribution-gap = 18pt  // before attribution — MUST stay larger than
+#let attribution-gap = 16pt  // before attribution — MUST stay larger than
                               // section-gap per the typography spec
 #let hymn-gap = 12pt         // NOT USED at present; spacing between hymns comes from other block spacing
 
