@@ -42,8 +42,15 @@ def run_query(main_typ_path, selector):
 
 
 def compute_force_breaks(main_typ_path):
-    positions = {item["value"]["hymn"]: item["value"] for item in run_query(main_typ_path, "<hymn-debug>")}
-    heights = {item["value"]["hymn"]: item["value"]["measured-height"] for item in run_query(main_typ_path, "<hymn-measured>")}
+    items = run_query(main_typ_path, "selector(<hymn-debug>).or(<hymn-measured>)")
+    positions = {}
+    heights = {}
+    for item in items:
+        v = item["value"]
+        if item["label"] == "<hymn-debug>":
+            positions[v["hymn"]] = v
+        elif item["label"] == "<hymn-measured>":
+            heights[v["hymn"]] = v["measured-height"]
 
     flagged = []
     for hymn_no, pos in positions.items():
