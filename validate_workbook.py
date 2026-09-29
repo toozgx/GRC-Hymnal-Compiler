@@ -119,9 +119,16 @@ def load_sheet_rows(ws, expected_columns, sheet_label, report):
  
 def id_from_title(title):
     """First letter of every word (incl. a/an/the/of/and/to), punctuation
-    ignored, uppercase — the established ID rule."""
-    words = re.findall(r"[A-Za-z']+", title)
-    return "".join(w[0].upper() for w in words if w)
+    ignored, uppercase — the established ID rule. Straight and curly
+    apostrophes stay inside a word, but a leading apostrophe (e.g. 'Tis)
+    is not counted as the word's initial."""
+    words = re.findall(r"[A-Za-z'\u2018\u2019]+", title)
+    initials = []
+    for w in words:
+        w = w.lstrip("'\u2018\u2019")
+        if w:
+            initials.append(w[0].upper())
+    return "".join(initials)
  
  
 def validate_hymns(hymns, report):
@@ -395,6 +402,75 @@ def validate_active_inactive(hymns, by_hymn, report):
         status = (h["Status"] or "").lower()
         if status == "active" and hid not in by_hymn:
             report.error(f"Hymn {hid}: Status=active but has no Lyrics Section content — cannot be published as-is")
+
+# Straight ASCII quotes are flagged in published editorial text. Not
+# auto-converted: the editor fixes the workbook by hand.
+#   \u2019 = ’   \u2018 = ‘   \u201c = “   \u201d = ”
+STRAIGHT_QUOTES = (
+    ("'", "apostrophe/single quote",
+     "use \u2019 (U+2019) for an apostrophe or closing quote, \u2018 (U+2018) for an opening quote"),
+    ('"', "double quote",
+     "use \u201c (U+201C) to open and \u201d (U+201D) to close"),
+)
+EXCERPT_RADIUS = 20
+
+
+def _excerpt(text, pos):
+    """Short single-line snippet of text around position pos."""
+    start = max(0, pos - EXCERPT_RADIUS)
+    end = min(len(text), pos + EXCERPT_RADIUS + 1)
+    snippet = text[start:end].replace("\r", " ").replace("\n", " / ")
+    return ("\u2026" if start > 0 else "") + snippet + ("\u2026" if end < len(text) else "")
+
+
+def check_typography(value, where, report):
+    """Warns once per straight-quote type found in one cell's text."""
+    if not isinstance(value, str):
+        return
+    for char, name, advice in STRAIGHT_QUOTES:
+        count = value.count(char)
+        if count:
+            report.warning(
+                f"{where}: {count} straight {name}(s) ({char}) - {advice}. "
+                f"First at: \u00ab{_excerpt(value, value.index(char))}\u00bb"
+            )
+
+
+def validate_typography(hymns, sections, contributors, title_page_ws, report):
+    """Warns about straight ' and \" in published editorial text of ACTIVE
+    hymns. Technical fields (IDs, Sequence, Type, Role, Status, Tune Slot,
+    Main Tune) are deliberately not scanned."""
+    titles = {h["ID"]: h["Title"] for h in hymns
+              if h["ID"] and (h["Status"] or "").lower() == "active"}
+
+    for h in hymns:
+        if h["ID"] not in titles:
+            continue
+        where = f"{HYMNS_SHEET} row {h['_row']} (ID {h['ID']}, '{h['Title']}')"
+        for field in ("Title", "Category", "Tune 1", "Tune 2", "Tune 3"):
+            check_typography(h.get(field), f"{where}, {field}", report)
+
+    for s in sections:
+        hid = s["Hymn ID"]
+        if hid not in titles:
+            continue
+        where = f"{SECTIONS_SHEET} row {s['_row']} (Hymn {hid}, '{titles[hid]}', {s['Type']})"
+        for field in ("Label", "Text"):
+            check_typography(s.get(field), f"{where}, {field}", report)
+
+    for c in contributors:
+        hid = c["Hymn ID"]
+        if hid not in titles:
+            continue
+        where = f"{CONTRIBUTORS_SHEET} row {c['_row']} (Hymn {hid}, '{titles[hid]}', {c['Role']})"
+        for field in ("Person Name", "Note"):
+            check_typography(c.get(field), f"{where}, {field}", report)
+
+    for row_num, (key, value) in enumerate(
+        title_page_ws.iter_rows(min_row=2, max_col=2, values_only=True), start=2
+    ):
+        if key:
+            check_typography(value, f"{TITLE_PAGE_SHEET} row {row_num} (key '{key}')", report)
  
  
 def main():
@@ -436,6 +512,7 @@ def main():
  
     by_hymn_sections = validate_sections(sections, valid_ids, report)
     validate_active_inactive(hymns, by_hymn_sections, report)
+    validate_typography(hymns, sections, contributors, wb[TITLE_PAGE_SHEET], report)
  
     categories = defaultdict(int)
     for h in hymns:
