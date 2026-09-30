@@ -48,7 +48,7 @@
 #let title-gap = 10pt   // gap between title and subtitle
 
 #let index-category-side-margin = 2.5cm
-#let index-category-title-gap = 24pt
+#let index-category-title-gap = 20pt
  
 // ============================================================
 // PAGE SETUP
