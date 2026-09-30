@@ -48,7 +48,7 @@ PDF it produced.
 3. Save and close the file.
 4. Run: Build Hymnal.cmd:
 
-- input: file path to Hymnal Master Data.xlsx (e.g. C:\User\Downloads\GRC-Hymnal-Compiler-main\Hymnal Master Data.xlsx)
+- input: file path to Hymnal Master Data.xlsx (e.g. `C:\User\Downloads\GRC-Hymnal-Compiler-main\Hymnal Master Data.xlsx`)
 
    If the file is stored elsewhere, input the full path along with filename and extension (.xlsx).
 
