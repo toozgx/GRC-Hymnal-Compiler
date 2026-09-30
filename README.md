@@ -11,7 +11,7 @@ handles all layout and pagination.
 ## Quick start (Windows 10/11)
 
 1. Download or clone this repository.
-2. Confirm the `fonts\` folder contains the PT Sans `.ttf` files
+2. Open the `HymnalCompiler\` subfolder. Confirm its `fonts\` folder contains the PT Sans `.ttf` files
    (Regular, Bold, Italic, Bold Italic).
 3. Double-click **`Setup.cmd`**. It downloads Typst and a portable Python
    into `tools\` and installs openpyxl. This needs an internet connection
@@ -35,7 +35,7 @@ The build accepts either a Google Sheets link or a local file path.
 
 - input: `https://docs.google.com/spreadsheets/d/<SHEET_ID>/edit` (copy from Google Sheet shared link)
 
-The sheet is downloaded into the `snapshots` folder with a timestamp,
+The sheet is downloaded into the `src\snapshots` folder with a timestamp,
 and the build runs from that copy. Keep the snapshot together with the
 PDF it produced.
 
@@ -69,7 +69,7 @@ installed system-wide, and no administrator rights are required.
 ## Google Sheets input
 
 The Sheet must be shared as **Anyone with the link → Viewer**. The build
-downloads a timestamped copy into `snapshots\`. Keep the snapshot with the
+downloads a timestamped copy into `src\snapshots\`. Keep the snapshot with the
 PDF it produced, so any PDF can be reproduced.
 
 ## Folder layout
@@ -78,13 +78,15 @@ PDF it produced, so any PDF can be reproduced.
       Setup.cmd            one-time setup (downloads tools\)
       Build Hymnal.cmd     the everyday entry point
       src\                 build.py, transform.py, pagination.py,
-                           validate_workbook.py, main.typ, template.typ
+                           validate_workbook.py, workbook_schema.py,
+                           main.typ, template.typ
+        snapshots\         workbook copies from Google Sheets (not committed)
       fonts\               PT Sans (committed to the repository)
       tools\               Typst + portable Python (created by Setup.cmd,
                            NOT committed)
-      snapshots\           workbook copies from Google Sheets (not committed)
 
-Build output (`hymnal.pdf`, `hymnal_data.json`) is written to `src\`.
+The PDF is written to `HymnalCompiler\hymnal.pdf`. Generated data is written
+to `HymnalCompiler\src\hymnal_data.json`.
 
 ## What is and is not in the repository
 
@@ -98,7 +100,8 @@ output. They are recreated by `Setup.cmd` or by a build.
 Pagination is calibrated against a specific Typst version and the bundled
 fonts. A different Typst release can shift line or column breaks.
 
-- `Setup.cmd` installs the newest Typst by default.
+- `Setup.cmd` currently pins Typst to **0.15.1**. Leaving `TYPST_VERSION`
+  blank selects the newest release instead.
 - Once the layout is settled, run `tools\typst\typst.exe --version`, then
   set `TYPST_VERSION` at the top of `Setup.cmd` to that number so every
   machine builds identically.
@@ -128,9 +131,14 @@ Typst's official releases.
 
 ## Manual build (developers)
 
-With Python, openpyxl and Typst installed and on `PATH`:
+From the `HymnalCompiler\` folder, with Python, openpyxl and Typst installed
+and on `PATH` (set `TYPST_FONT_PATHS` to the bundled `fonts\` folder):
 
     python src/build.py "path/to/workbook.xlsx"
+
+To run the workbook validation tests from that same folder:
+
+    python -m unittest discover -s tests -v
 
 ## Requirements
 

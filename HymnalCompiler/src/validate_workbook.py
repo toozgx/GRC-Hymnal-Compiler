@@ -21,6 +21,7 @@ import sys
 import re
 from collections import defaultdict
 import openpyxl
+from workbook_schema import read_title_page
  
 VALID_TYPES = {"stanza", "chorus", "intro", "outro", "bridge", "final chorus"}
 VALID_STATUSES = {"active", "inactive", "removed"}
@@ -37,6 +38,15 @@ HYMNS_COLUMNS = [
 SECTIONS_COLUMNS = ["Hymn ID", "Sequence", "Type", "Label", "Text"]
 CONTRIBUTORS_COLUMNS = ["Hymn ID", "Sequence", "Role", "Person Name", "Note", "Tune Slot"]
 CATEGORIES_COLUMNS = ["Category", "Sequence"]
+
+# Check these fields before domain validation calls string methods. Numeric
+# sequences, tune slots, Main Tune and stanza labels remain supported.
+TEXT_COLUMNS = {
+    HYMNS_SHEET: {"ID", "Title", "Category", "Tune 1", "Tune 2", "Tune 3", "Status"},
+    SECTIONS_SHEET: {"Hymn ID", "Type", "Text"},
+    CONTRIBUTORS_SHEET: {"Hymn ID", "Role", "Person Name", "Note"},
+    CATEGORIES_SHEET: {"Category"},
+}
  
 VALID_ROLES = {"author", "word source", "translator", "translation source", "composer", "tune source"}
 # Which of the three Sequence-numbering groups each Role belongs to (established
@@ -111,6 +121,11 @@ def load_sheet_rows(ws, expected_columns, sheet_label, report):
             val = values[idx] if idx is not None and idx < len(values) else None
             if isinstance(val, str):
                 val = val.strip()
+            if col_name in TEXT_COLUMNS.get(sheet_label, ()) and val is not None and not isinstance(val, str):
+                report.error(
+                    f"{sheet_label} row {row_num}, {col_name}: "
+                    f"expected text, got {type(val).__name__}"
+                )
             record[col_name] = val
         record["_row"] = row_num
         rows.append(record)
@@ -492,17 +507,21 @@ def main():
     hymns = load_sheet_rows(wb[HYMNS_SHEET], HYMNS_COLUMNS, HYMNS_SHEET, report)
     sections = load_sheet_rows(wb[SECTIONS_SHEET], SECTIONS_COLUMNS, SECTIONS_SHEET, report)
     contributors = load_sheet_rows(wb[CONTRIBUTORS_SHEET], CONTRIBUTORS_COLUMNS, CONTRIBUTORS_SHEET, report)
+    category_rows = load_sheet_rows(wb[CATEGORIES_SHEET], CATEGORIES_COLUMNS, CATEGORIES_SHEET, report)
     report.note(
         f"Loaded {len(hymns)} hymn row(s), {len(sections)} section row(s), "
         f"{len(contributors)} contributor row(s)"
     )
 
-    title_keys = {str(k).strip().lower()
-        for k, v in wb[TITLE_PAGE_SHEET].iter_rows(min_row=2, max_col=2, values_only=True)
-        if k and v}
-    for needed in ("title", "subtitle"):
-        if needed not in title_keys:
-            report.error(f"Title Page: missing or empty value for key '{needed}'")
+    _, title_errors = read_title_page(wb[TITLE_PAGE_SHEET])
+    for error in title_errors:
+        report.error(error)
+
+    # Schema errors must stop here: the checks below assume text fields are
+    # strings and would otherwise hide these useful messages in a traceback.
+    if report.errors:
+        report.print_all()
+        sys.exit(1)
  
     valid_ids = validate_hymns(hymns, report)
     hymns_by_id = {h["ID"]: h for h in hymns if h["ID"]}
@@ -519,8 +538,7 @@ def main():
         categories[h["Category"] or "(blank)"] += 1
     report.note("Categories in use: " + ", ".join(f"{c} ({n})" for c, n in sorted(categories.items())))
  
-    categories = load_sheet_rows(wb[CATEGORIES_SHEET], CATEGORIES_COLUMNS, CATEGORIES_SHEET, report)
-    validate_categories(categories, hymns, report)
+    validate_categories(category_rows, hymns, report)
  
     statuses = defaultdict(int)
     for h in hymns:
