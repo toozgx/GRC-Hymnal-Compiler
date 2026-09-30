@@ -6,20 +6,67 @@ compiler (`typst` must be on PATH).
 
 Usage:
     python build.py "path/to/workbook.xlsx"
+    python build.py "https://docs.google.com/spreadsheets/d/<SHEET_ID>/edit"
+
+If given a Google Sheets URL (sharing set to "Anyone with the link can
+view"), the Sheet is downloaded as .xlsx into a "snapshots" folder next to
+this script, with a timestamp in the file name, and the build runs from that
+copy. Keep the snapshot with the PDF it produced.
 
 Expects template.typ and main.typ in the same folder as this script.
 Writes hymnal_data.json and hymnal.pdf into that same folder.
 """
 
 import sys
+import re
 import json
 import subprocess
 import shutil
+import urllib.request
+import urllib.error
+from datetime import datetime
 from pathlib import Path
 
 from transform import load_workbook, build_hymn_data, build_indexes, load_title_page
 
 from pagination import compute_force_breaks, first_category_break_violation
+
+
+def fetch_workbook(source, here):
+    """Returns a local .xlsx path. Local paths pass through unchanged;
+    Google Sheets URLs are downloaded to snapshots/ first."""
+    match = re.search(r"/spreadsheets/d/([A-Za-z0-9_-]+)", source)
+    if not match:
+        return source  # not a Sheets URL - treat as a local file path
+
+    sheet_id = match.group(1)
+    export_url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/export?format=xlsx"
+    snapshots = here / "snapshots"
+    snapshots.mkdir(exist_ok=True)
+    stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    target = snapshots / f"workbook_{stamp}.xlsx"
+
+    print(f"Downloading Google Sheet ({sheet_id}) ...")
+    try:
+        request = urllib.request.Request(export_url, headers={"User-Agent": "Mozilla/5.0"})
+        with urllib.request.urlopen(request, timeout=60) as response:
+            data = response.read()
+    except urllib.error.URLError as err:
+        print(f"Download FAILED: {err}")
+        print("Check the internet connection and that the Sheet is shared as "
+              "'Anyone with the link' -> Viewer.")
+        sys.exit(1)
+
+    # A real .xlsx is a zip file and starts with "PK". Anything else is
+    # almost certainly a Google login page (Sheet not shared publicly).
+    if not data.startswith(b"PK"):
+        print("Download did not return a spreadsheet file.")
+        print("Most likely the Sheet is not shared as 'Anyone with the link' -> Viewer.")
+        sys.exit(1)
+
+    target.write_bytes(data)
+    print(f"Saved snapshot: {target}")
+    return str(target)
 
 
 def write_data(path, hymn_data, indexes, title_page, category_breaks):
@@ -39,15 +86,16 @@ def write_data(path, hymn_data, indexes, title_page, category_breaks):
 
 def main():
     if len(sys.argv) != 2:
-        print("Usage: python3 build.py <path-to-workbook.xlsx>")
+        print("Usage: python3 build.py <path-to-workbook.xlsx | Google Sheets URL>")
         sys.exit(1)
-        
+
     if shutil.which("typst") is None:
         print("Typst was not found on PATH. Install it or add it to PATH, then run again.")
         sys.exit(1)
 
-    workbook_path = sys.argv[1]
     here = Path(__file__).resolve().parent
+    workbook_path = fetch_workbook(sys.argv[1], here)
+
     check = subprocess.run([sys.executable, str(here / "validate_workbook.py"), workbook_path])
     if check.returncode != 0:
         print("Workbook validation found ERRORS - build stopped. Fix them and run again.")
