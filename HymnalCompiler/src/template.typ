@@ -223,7 +223,9 @@
   if hymn.words_line != none { lines.push(hymn.words_line) }
   if hymn.translator_line != none { lines.push(hymn.translator_line) }
   for t in hymn.tune_lines { lines.push(t) }
-  if hymn.alt_tunes_line != none { lines.push(hymn.alt_tunes_line) }
+  if hymn.alt_tunes_line != none {
+    for part in hymn.alt_tunes_line.split("\n") { lines.push(part) }
+  }
  
   if lines.len() > 0 {
     set text(size: attribution-size, style: "italic")
