@@ -102,7 +102,7 @@ def main():
         sys.exit(1)
     data_path = here / "hymnal_data.json"
     main_typ = here / "main.typ"
-    output_pdf = here / "hymnal.pdf"
+    output_pdf = here.parent / "hymnal.pdf"
 
     hymns, sections, contributors, categories = load_workbook(workbook_path)
     title_page = load_title_page(workbook_path)
