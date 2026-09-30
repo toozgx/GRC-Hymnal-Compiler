@@ -16,9 +16,52 @@ handles all layout and pagination.
 3. Double-click **`Setup.cmd`**. It downloads Typst and a portable Python
    into `tools\` and installs openpyxl. This needs an internet connection
    and is done once per machine.
-4. Double-click **`Build Hymnal.cmd`**, then paste a workbook path or a
-   Google Sheets URL when prompted. Alternatively, drag a workbook `.xlsx`
-   file onto `Build Hymnal.cmd`.
+
+Two ways to work with the workbook:
+
+- **Google Sheets (recommended).** Easier for shared editing, and the
+  build downloads a fresh copy each time.
+- **Local workbook.** A locally saved copy of the template, edited in
+  Excel or a similar program.
+
+## Build
+
+The build accepts either a Google Sheets link or a local file path.
+
+### Option A: Google Sheets
+
+1. Set the sheet's sharing to "Anyone with the link" → Viewer.
+2. Run: Build Hymnal.cmd
+
+       input: https://docs.google.com/spreadsheets/d/<SHEET_ID>/edit (copy from Google Sheet shared link)
+
+The sheet is downloaded into the `snapshots` folder with a timestamp,
+and the build runs from that copy. Keep the snapshot together with the
+PDF it produced.
+
+### Option B: Local workbook
+
+1. Copy `Hymnal Master Data Template.xlsx` and rename the copy
+   (for example `Hymnal Master Data.xlsx`).
+2. Fill in the sheets. Do not rename the sheets or change the column
+   headings. Delete the sample rows, or replace them with real content.
+3. Save and close the file.
+4. Run: Build Hymnal.cmd:
+
+       input: file path to Hymnal Master Data.xlsx (e.g. C:\User\Downloads\GRC-Hymnal-Compiler-main\Hymnal Master Data.xlsx)
+
+   If the file is stored elsewhere, input the full path along with filename and extension (.xlsx).
+
+To rebuild after making changes, save the workbook and run the same
+command again.
+
+### What the build does
+
+1. Validates the workbook. Errors stop the build; warnings are shown
+   for review.
+2. Generates `hymnal_data.json`.
+3. Compiles the PDF with Typst, resolving page and column breaks
+   automatically.
 
 When the build succeeds, the PDF opens automatically. Nothing needs to be
 installed system-wide, and no administrator rights are required.
