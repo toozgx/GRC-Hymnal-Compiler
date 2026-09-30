@@ -33,7 +33,7 @@ The build accepts either a Google Sheets link or a local file path.
 1. Set the sheet's sharing to "Anyone with the link" → Viewer.
 2. Run: Build Hymnal.cmd
 
-- input: https://docs.google.com/spreadsheets/d/<SHEET_ID>/edit (copy from Google Sheet shared link)
+- input: `https://docs.google.com/spreadsheets/d/<SHEET_ID>/edit` (copy from Google Sheet shared link)
 
 The sheet is downloaded into the `snapshots` folder with a timestamp,
 and the build runs from that copy. Keep the snapshot together with the
