@@ -41,7 +41,7 @@
 #let label-wrap-indent = 10pt  // wrap-indent inside Chorus/Bridge/etc. (differs from stanza-wrap-indent; undecided whether they should match)
  
 #let section-gap = 12pt      // between stanzas / chorus / bridge / etc.
-#let attribution-gap = 16pt  // before attribution — MUST stay larger than
+#let attribution-gap = 14pt  // before attribution — MUST stay larger than
                               // section-gap per the typography spec
 #let hymn-gap = 12pt         // NOT USED at present; spacing between hymns comes from other block spacing
 
@@ -232,9 +232,9 @@
     set align(right)
  
     block(
-      width: 90%,
+      width: 80%,
       above: attribution-gap,
-      below: 4pt,
+      below: 5pt,
       breakable: false,
     )[
       #lines.join([ \ ])
