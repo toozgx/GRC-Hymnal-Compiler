@@ -298,7 +298,7 @@ def build_attribution(hymn, contrib_rows):
         if not suffix:
             flags.append(f"Tune {slot} '{name}' has no Composer/Tune Source credited")
 
-    alt_tunes_line = "Alt. tune: " + "; ".join(alt_parts) if alt_parts else None
+    alt_tunes_line = "Alt. tune: " + ";\n".join(alt_parts) if alt_parts else None
 
     return words_line, translator_line, tune_lines, alt_tunes_line, flags
 
