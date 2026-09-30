@@ -50,6 +50,7 @@ import sys
 from collections import defaultdict
 import openpyxl
 import re
+from workbook_schema import read_title_page
 
 HYMNS_SHEET = "Hymns Metadata"
 SECTIONS_SHEET = "Lyrics Section"
@@ -103,11 +104,12 @@ def load_title_page(path):
     e.g. {"title": "...", "subtitle": "..."}. Kept separate from
     load_workbook() so that function's return signature is unchanged."""
     wb = openpyxl.load_workbook(path, data_only=True)
-    ws = wb[TITLE_PAGE_SHEET]
-    info = {}
-    for key, value in ws.iter_rows(min_row=2, max_col=2, values_only=True):
-        if key:
-            info[str(key).strip().lower()] = value.strip() if isinstance(value, str) else value
+    try:
+        info, errors = read_title_page(wb[TITLE_PAGE_SHEET])
+    finally:
+        wb.close()
+    if errors:
+        raise ValueError("\n".join(errors))
     return info
 
 
