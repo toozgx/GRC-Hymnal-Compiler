@@ -172,16 +172,14 @@
 // ============================================================
  
 #let section-heading-text(section) = {
-  if section.label != none {
+  let raw = if section.label != none {
     section.label
   } else if section.type == "final chorus" {
-    "Final Chorus:"
-  } else if section.type == "chorus" {
-    "Chorus:"
+    "Final Chorus"
   } else {
-    // intro, outro, bridge
-    upper(section.type.slice(0, 1)) + section.type.slice(1) + ":"
+    upper(section.type.slice(0, 1)) + section.type.slice(1)
   }
+  if raw.ends-with(":") { raw } else { raw + ":" }
 }
  
 #let section-block(section, number-col-width: stanza-number-col) = {
@@ -202,9 +200,9 @@
         columns: (number-col-width, 1fr),
         gutter: 0pt,
         [],
-        emph[
+        [
           #block(below: 5pt)[#section-heading-text(section)]
-          #render-lines(section.text, wrap-indent: label-wrap-indent)
+          #emph[#render-lines(section.text, wrap-indent: label-wrap-indent)]
         ],
       )
     ]
