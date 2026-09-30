@@ -33,7 +33,7 @@ The build accepts either a Google Sheets link or a local file path.
 1. Set the sheet's sharing to "Anyone with the link" → Viewer.
 2. Run: Build Hymnal.cmd
 
-       input: https://docs.google.com/spreadsheets/d/<SHEET_ID>/edit (copy from Google Sheet shared link)
+- input: https://docs.google.com/spreadsheets/d/<SHEET_ID>/edit (copy from Google Sheet shared link)
 
 The sheet is downloaded into the `snapshots` folder with a timestamp,
 and the build runs from that copy. Keep the snapshot together with the
@@ -48,7 +48,7 @@ PDF it produced.
 3. Save and close the file.
 4. Run: Build Hymnal.cmd:
 
-       input: file path to Hymnal Master Data.xlsx (e.g. C:\User\Downloads\GRC-Hymnal-Compiler-main\Hymnal Master Data.xlsx)
+- input: file path to Hymnal Master Data.xlsx (e.g. C:\User\Downloads\GRC-Hymnal-Compiler-main\Hymnal Master Data.xlsx)
 
    If the file is stored elsewhere, input the full path along with filename and extension (.xlsx).
 
