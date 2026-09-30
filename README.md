@@ -17,14 +17,14 @@ handles all layout and pagination.
    into `tools\` and installs openpyxl. This needs an internet connection
    and is done once per machine.
 
+## Build
+
 Two ways to work with the workbook:
 
 - **Google Sheets (recommended).** Easier for shared editing, and the
   build downloads a fresh copy each time.
 - **Local workbook.** A locally saved copy of the template, edited in
   Excel or a similar program.
-
-## Build
 
 The build accepts either a Google Sheets link or a local file path.
 
