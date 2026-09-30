@@ -144,3 +144,19 @@ To run the workbook validation tests from that same folder:
 
 - Windows 10/11, 64-bit
 - Internet access for `Setup.cmd` (and for Google Sheets input)
+
+## Development and AI Assistance Disclosure
+
+This project was developed using a human-directed, AI-assisted workflow.
+Generative AI (OpenAI ChatGPT & Anthropic Claude) was used extensively as a programming and
+technical-development assistant, including for software architecture
+discussion, Python and Typst development, debugging, code review,
+data-transformation logic, pagination analysis, and documentation.
+
+The project maintainer remains responsible for the project requirements,
+editorial decisions, hymnal source data, attribution decisions, validation,
+testing, and final acceptance of the implementation. AI-generated suggestions
+were reviewed, modified, tested, or rejected as appropriate.
+
+AI assistance does not constitute authorship or editorial authority over the
+hymnal's content.
