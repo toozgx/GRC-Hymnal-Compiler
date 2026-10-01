@@ -19,41 +19,49 @@ handles all layout and pagination.
 
 ## Build
 
-Two ways to work with the workbook:
+The build accepts either a Google Sheets link or a local Excel workbook.
 
-- **Google Sheets (recommended).** Easier for shared editing, and the
-  build downloads a fresh copy each time.
-- **Local workbook.** A locally saved copy of the template, edited in
-  Excel or a similar program.
+### Option A: Google Sheets — Recommended
 
-The build accepts either a Google Sheets link or a local file path.
+Google Sheets is recommended for shared editing. Each build downloads a fresh copy of the sheet, so the published PDF is always based on a timestamped snapshot.
 
-### Option A: Google Sheets
+1. Set the sheet's sharing to **Anyone with the link → Viewer**.
+2. Run `Build Hymnal.cmd`.
+3. When prompted, enter the Google Sheets link:
 
-1. Set the sheet's sharing to "Anyone with the link" → Viewer.
-2. Run: `Build Hymnal.cmd`
+   `https://docs.google.com/spreadsheets/d/<SHEET_ID>/edit`
 
-- input: `https://docs.google.com/spreadsheets/d/<SHEET_ID>/edit` (copy from Google Sheet shared link)
+   Copy this from the Google Sheet's shared link.
 
-The sheet is downloaded into the `src\snapshots` folder with a timestamp,
-and the build runs from that copy. Keep the snapshot together with the
-PDF it produced.
+The workbook is downloaded to the `src\snapshots` folder with a timestamp, and the build runs from that snapshot.
+
+**Optional: keep the snapshot together with the PDF it produced for better version control.**
 
 ### Option B: Local workbook
 
-1. Copy `Hymnal Master Data Template.xlsx` and rename the copy
-   (for example `Hymnal Master Data.xlsx`).
-2. Fill in the sheets. Do not rename the sheets or change the column
-   headings. Delete the sample rows, or replace them with real content.
-3. Save and close the file.
-4. Run: `Build Hymnal.cmd`:
+A local copy of the template can be edited in Excel. This is useful when the workbook does not need to be shared through Google Sheets.
 
-- input: file path to Hymnal Master Data.xlsx (e.g. `C:\User\Downloads\GRC-Hymnal-Compiler-main\Hymnal Master Data.xlsx`)
+1. Copy `Hymnal Master Data Template.xlsx` and rename the copy, for example:
 
-   If the file is stored elsewhere, input the full path along with filename and extension (.xlsx).
+   `Hymnal Master Data.xlsx`
 
-To rebuild after making changes, save the workbook and run the same
-command again.
+   It is recommended to keep the workbook in the same folder as `Build Hymnal.cmd`.
+
+2. Fill in the workbook. **Do not rename the tabs or change the column headings.** Delete the sample rows or replace them with real content.
+
+3. Save and close the workbook.
+
+4. Run `Build Hymnal.cmd`.
+
+5. When prompted, enter the workbook filename:
+
+   `Hymnal Master Data.xlsx`
+
+   If the workbook is stored elsewhere, enter its full path, including the filename and extension. For example:
+
+   `C:\Users\Downloads\GRC-Hymnal-Compiler-main\Hymnal Master Data.xlsx`
+
+To rebuild after making changes, save and close the workbook, then run `Build Hymnal.cmd` again.
 
 ### What the build does
 
@@ -75,15 +83,17 @@ PDF it produced, so any PDF can be reproduced.
 ## Folder layout
 
     HymnalCompiler\
-      Setup.cmd            one-time setup (downloads tools\)
-      Build Hymnal.cmd     the everyday entry point
-      src\                 build.py, transform.py, pagination.py,
-                           validate_workbook.py, workbook_schema.py,
-                           main.typ, template.typ
-        snapshots\         workbook copies from Google Sheets (not committed)
-      fonts\               PT Sans (committed to the repository)
-      tools\               Typst + portable Python (created by Setup.cmd,
-                           NOT committed)
+      Hymnal Master Data Template.xlsx (data template)
+      Setup.cmd (one-time setup - downloads tools)
+      Build Hymnal.cmd (the everyday entry point)
+      src\           build.py, transform.py, pagination.py,
+                     validate_workbook.py, workbook_schema.py,
+                     main.typ, template.typ
+        snapshots\      workbook copies from Google Sheets (not committed)
+      fonts\         PT Sans (committed to the repository)
+      tools\         Typst + portable Python (created by Setup.cmd, not committed)
+      tests\         test_workbook_validation.py (debug tool)
+                             
 
 The PDF is written to `HymnalCompiler\hymnal.pdf`. Generated data is written
 to `HymnalCompiler\src\hymnal_data.json`.
