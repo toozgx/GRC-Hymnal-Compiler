@@ -42,17 +42,13 @@ The workbook is downloaded to the `src\snapshots` folder with a timestamp, and t
 A local copy of the template can be edited in Excel. This is useful when the workbook does not need to be shared through Google Sheets.
 
 1. Copy `Hymnal Master Data Template.xlsx` and rename the copy, for example:
-
+   
    `Hymnal Master Data.xlsx`
-
    It is recommended to keep the workbook in the same folder as `Build Hymnal.cmd`.
-
+   
 2. Fill in the workbook. **Do not rename the tabs or change the column headings.** Delete the sample rows or replace them with real content.
-
 3. Save and close the workbook.
-
 4. Run `Build Hymnal.cmd`.
-
 5. When prompted, enter the workbook filename:
 
    `Hymnal Master Data.xlsx`
