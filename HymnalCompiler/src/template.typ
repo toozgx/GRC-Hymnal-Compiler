@@ -276,15 +276,29 @@
   numbers,
   size: 7pt,
   indent: 8pt,
+  max-numbers-share: 50%,   // numbers column never wider than this share of the row
+  numbers-valign: bottom,   // bottom or top
 ) = {
   block(
     below: 4pt,
     breakable: false,
+    width: 100%,
   )[
     #set text(size: size)
-    #par(hanging-indent: indent, justify: false, leading: 0.5em)[
-      #left-content #box(width: 1fr, repeat[.#h(2pt)]) #numbers
-    ]
+    #layout(avail => {
+      let nums = [#numbers]
+      let natural = measure(nums).width
+      let cap = avail.width * max-numbers-share
+      grid(
+        columns: (1fr, if natural > cap { cap } else { auto }),
+        column-gutter: 4pt,
+        align: numbers-valign,
+        par(hanging-indent: indent, justify: false, leading: 0.5em)[
+          #left-content #box(width: 1fr, repeat[.#h(2pt)])
+        ],
+        align(right, par(justify: false, leading: 0.5em, nums)),
+      )
+    })
   ]
 }
  
@@ -359,7 +373,7 @@
   index-heading("Index by Author, Translator, and Source")
  
   for (name, hymn_nos) in index {
-    index-row(name, hymn_nos.map(str).join(", "))
+    index-row(name, hymn_nos.map(str).join(", "), numbers-valign: top)
   }
 }
  
