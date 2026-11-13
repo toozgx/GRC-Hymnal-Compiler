@@ -325,6 +325,8 @@ def build_hymn_data(hymns, sections, contributors):
         sections_out = []
         stanza_no = 0
         for s in by_hymn_sections.get(h["ID"], []):
+            if (s["Status"] or "active").strip().lower() != "active":
+                continue
             type_lc = (s["Type"] or "").strip().lower()
             entry = {"type": type_lc, "label": s["Label"] or None, "text": normalize_lyric_text(s["Text"])}
             if type_lc == "stanza":
