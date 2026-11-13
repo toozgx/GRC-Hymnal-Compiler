@@ -23,8 +23,8 @@ def valid_workbook():
             ["TH", "Test Hymn", "Worship", "Test Tune", None, None, 1, "active"],
         ],
         "Lyrics Section": [
-            ["Hymn ID", "Sequence", "Type", "Label", "Text"],
-            ["TH", 1, "Stanza", 1, "First line\nSecond line"],
+            ["Hymn ID", "Sequence", "Type", "Label", "Text", "Status"],
+            ["TH", 1, "Stanza", 1, "First line\nSecond line", "active"],
         ],
         "Contributors": [
             ["Hymn ID", "Sequence", "Role", "Person Name", "Note", "Tune Slot"],
@@ -71,7 +71,7 @@ class WorkbookValidationTests(unittest.TestCase):
     def test_text_fields_reject_numbers_with_row_and_column(self):
         fields = {
             "Hymns Metadata": {"A2": "ID", "B2": "Title", "C2": "Category", "D2": "Tune 1", "E2": "Tune 2", "F2": "Tune 3", "H2": "Status"},
-            "Lyrics Section": {"A2": "Hymn ID", "C2": "Type", "E2": "Text"},
+            "Lyrics Section": {"A2": "Hymn ID", "C2": "Type", "E2": "Text", "F2": "Status"},
             "Contributors": {"A2": "Hymn ID", "C2": "Role", "D2": "Person Name", "E2": "Note"},
             "Categories": {"A2": "Category"},
         }
@@ -81,6 +81,16 @@ class WorkbookValidationTests(unittest.TestCase):
                     wb = valid_workbook()
                     wb[sheet][cell] = 123
                     self.assert_rejected(self.validate(wb), f"{sheet} row 2, {column}: expected text")
+
+    def test_invalid_section_status_is_rejected(self):
+        wb = valid_workbook()
+        wb["Lyrics Section"]["F2"] = "inactve"
+        self.assert_rejected(self.validate(wb), "Lyrics Section row 2 (Hymn TH): invalid Status")
+
+    def test_hymn_with_every_section_inactive_is_rejected(self):
+        wb = valid_workbook()
+        wb["Lyrics Section"]["F2"] = "inactive"
+        self.assert_rejected(self.validate(wb), "every Lyrics Section row is inactive")
 
     def test_boolean_lyric_is_not_accepted_as_text(self):
         wb = valid_workbook()
