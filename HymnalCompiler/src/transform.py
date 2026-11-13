@@ -61,7 +61,7 @@ TITLE_PAGE_SHEET = "Title Page"
 HYMNS_COLUMNS = [
     "ID", "Title", "Category", "Tune 1", "Tune 2", "Tune 3", "Main Tune", "Status",
 ]
-SECTIONS_COLUMNS = ["Hymn ID", "Sequence", "Type", "Label", "Text"]
+SECTIONS_COLUMNS = ["Hymn ID", "Sequence", "Type", "Label", "Text", "Status"]
 CONTRIBUTORS_COLUMNS = ["Hymn ID", "Sequence", "Role", "Person Name", "Note", "Tune Slot"]
 
 WORDS_ROLES = ("author", "word source")
