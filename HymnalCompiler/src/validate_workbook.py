@@ -35,7 +35,8 @@ TITLE_PAGE_SHEET = "Title Page"
 HYMNS_COLUMNS = [
     "ID", "Title", "Category", "Tune 1", "Tune 2", "Tune 3", "Main Tune", "Status",
 ]
-SECTIONS_COLUMNS = ["Hymn ID", "Sequence", "Type", "Label", "Text"]
+SECTIONS_COLUMNS = ["Hymn ID", "Sequence", "Type", "Label", "Text", "Status"]
+VALID_SECTION_STATUSES = {"active", "inactive"}
 CONTRIBUTORS_COLUMNS = ["Hymn ID", "Sequence", "Role", "Person Name", "Note", "Tune Slot"]
 CATEGORIES_COLUMNS = ["Category", "Sequence"]
 
@@ -43,7 +44,7 @@ CATEGORIES_COLUMNS = ["Category", "Sequence"]
 # sequences, tune slots, Main Tune and stanza labels remain supported.
 TEXT_COLUMNS = {
     HYMNS_SHEET: {"ID", "Title", "Category", "Tune 1", "Tune 2", "Tune 3", "Status"},
-    SECTIONS_SHEET: {"Hymn ID", "Type", "Text"},
+    SECTIONS_SHEET: {"Hymn ID", "Type", "Text", "Status"},
     CONTRIBUTORS_SHEET: {"Hymn ID", "Role", "Person Name", "Note"},
     CATEGORIES_SHEET: {"Category"},
 }
@@ -393,7 +394,14 @@ def validate_sections(sections, valid_ids, report):
                 f"Lyrics Section row {row} (Hymn {hid}): invalid Type '{s['Type']}' "
                 f"(expected Stanza, Chorus, Intro, Outro, Bridge, or Final Chorus)"
             )
- 
+         
+        sec_status = (s.get("Status") or "").strip().lower()
+        if sec_status and sec_status not in VALID_SECTION_STATUSES:
+            report.error(
+                f"Lyrics Section row {row} (Hymn {hid}): invalid Status '{s['Status']}' "
+                f"(expected active or inactive, or leave blank for active)"
+            )
+     
         if not s["Text"]:
             report.error(f"Lyrics Section row {row} (Hymn {hid}, Type {s['Type']}): missing Text")
  
@@ -417,6 +425,12 @@ def validate_active_inactive(hymns, by_hymn, report):
         status = (h["Status"] or "").lower()
         if status == "active" and hid not in by_hymn:
             report.error(f"Hymn {hid}: Status=active but has no Lyrics Section content — cannot be published as-is")
+        if status == "active" and hid not in by_hymn:
+            report.error(...)   # existing check, unchanged
+        elif status == "active" and not any(
+            (s.get("Status") or "active").strip().lower() == "active" for s in by_hymn[hid]
+        ):
+            report.error(f"Hymn {hid}: Status=active but every Lyrics Section row is inactive — nothing to publish")
 
 # Straight ASCII quotes are flagged in published editorial text. Not
 # auto-converted: the editor fixes the workbook by hand.
@@ -468,6 +482,8 @@ def validate_typography(hymns, sections, contributors, title_page_ws, report):
     for s in sections:
         hid = s["Hymn ID"]
         if hid not in titles:
+            continue
+        if (s.get("Status") or "active").strip().lower() != "active":
             continue
         where = f"{SECTIONS_SHEET} row {s['_row']} (Hymn {hid}, '{titles[hid]}', {s['Type']})"
         for field in ("Label", "Text"):
